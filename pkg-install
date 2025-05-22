@@ -1,1 +1,32 @@
 #!/bin/sh
+REPO="./repo"
+CACHE="./cache"
+#PACKAGE="$1"
+PACKAGE="helloworld"
+if [ -z "$PACKAGE" ]; then
+    printf "Package doesn't exist or not specified.\n"
+    exit 1
+fi
+if ! [ -d "$REPO" ]; then
+    mkdir -p "$REPO"
+fi
+if ! [ -d "$CACHE" ]; then
+    mkdir -p "$CACHE"
+fi
+. "$REPO/$PACKAGE.pkg"
+mkdir -p "$CACHE/$PACKAGE"
+echo "$SOURCES" |
+    while IFS= read -r URL; do
+        FILE="$(echo "$URL" | sed 's_.*/__g')"
+        printf "Downloading '%s'.\n" "$FILE"
+        if command -v curl >/dev/null; then
+            curl -L -C - -f -o "$CACHE/$PACKAGE/$FILE" "$URL"
+        else
+            if command -v wget >/dev/null; then
+                wget --passive-ftp -c -O "$FILE" "$URL"
+            else
+                printf "ERROR: No download command.\n"
+                exit 1
+            fi
+        fi
+    done

@@ -1,1 +1,2 @@
-sources=""
+SOURCES="https://github.com/rex-williams/pkg/raw/refs/heads/master/helloworld.c
+https://github.com/rex-williams/pkg/raw/refs/heads/master/helloworld.sig"
