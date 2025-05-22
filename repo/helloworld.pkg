@@ -1,4 +1,5 @@
 SOURCES="https://github.com/rex-williams/pkg/raw/refs/heads/master/tmp/helloworld.c"
 BUILD (){
     gcc helloworld.c -o helloworld
+    ./helloworld
 }
