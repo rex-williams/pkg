@@ -1,4 +1,5 @@
 #!/bin/sh
+set -x
 REPO="./repo"
 CACHE="./cache"
 #PACKAGE="$1"
@@ -13,12 +14,12 @@ fi
 if ! [ -d "$CACHE" ]; then
     mkdir -p "$CACHE"
 fi
-. "$REPO/$PACKAGE.pkg"
 mkdir -p "$CACHE/$PACKAGE"
-echo "$SOURCES" |
-    while IFS= read -r URL; do
-        FILE="$(echo "$URL" | sed 's_.*/__g')"
-        printf "Downloading '%s'.\n" "$FILE"
-        curl -L -C - -f -o "$CACHE/$PACKAGE/$FILE" "$URL"
-        curl -L -C - -f -o "$CACHE/$PACKAGE/$FILE.sig" "$URL.sig"
-    done
+. "$REPO/$PACKAGE.pkg"
+echo "$SOURCES" | while IFS= read -r URL; do
+    FILE="$(echo "$URL" | sed 's_.*/__g')"
+    printf "Downloading '%s'.\n" "$FILE"
+    #curl -L -C - -f -o "$CACHE/$PACKAGE/$FILE" "$URL"
+done
+cd "$CACHE/$PACKAGE"
+BUILD
