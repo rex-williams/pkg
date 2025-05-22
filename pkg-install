@@ -18,6 +18,7 @@ mkdir -p "$CACHE/$PACKAGE"
 echo "$SOURCES" |
     while IFS= read -r URL; do
         FILE="$(echo "$URL" | sed 's_.*/__g')"
+        if ! sha256sum -c "$CACHE/$PACKAGE/$FILE.sig"
         printf "Downloading '%s'.\n" "$FILE"
         if command -v curl >/dev/null; then
             curl -L -C - -f -o "$CACHE/$PACKAGE/$FILE" "$URL"
