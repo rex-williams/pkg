@@ -1,0 +1,8 @@
+SOURCES="https://github.com/abishekvashok/cmatrix/releases/download/v2.0/cmatrix-v2.0-Butterscotch.tar"
+BUILD (){
+    tar xvf "cmatrix-v2.0-Butterscotch.tar"
+    cd "cmatrix"
+    ./configure
+        make
+        make install
+}

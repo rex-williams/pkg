@@ -1,25 +1,28 @@
 #!/bin/sh
-set -x
-REPO="./repo"
-CACHE="./cache"
-#PACKAGE="$1"
-PACKAGE="helloworld"
-if [ -z "$PACKAGE" ]; then
-    printf "Package doesn't exist or not specified.\n"
-    exit 1
-fi
+if [ "$(id -u)" -ne 0 ]; then echo "Please run as root."; exit 1; fi
+REPO="$HOME/.local/share/repo"
+CACHE="$HOME/.cache/pkg"
+PACKAGE="$1"
 if ! [ -d "$REPO" ]; then
     mkdir -p "$REPO"
 fi
 if ! [ -d "$CACHE" ]; then
     mkdir -p "$CACHE"
 fi
+if [ -z "$PACKAGE" ]; then
+    find "$REPO" -type f -name "*.pkg"
+    exit 0
+fi
+if ! [ -f "$REPO/$PACKAGE.pkg" ]; then
+    printf "ERROR: No such package.\n"
+    exit 1
+fi
 mkdir -p "$CACHE/$PACKAGE"
 . "$REPO/$PACKAGE.pkg"
 echo "$SOURCES" | while IFS= read -r URL; do
     FILE="$(echo "$URL" | sed 's_.*/__g')"
     printf "Downloading '%s'.\n" "$FILE"
-    #curl -L -C - -f -o "$CACHE/$PACKAGE/$FILE" "$URL"
+    curl -L -C - -f -o "$CACHE/$PACKAGE/$FILE" "$URL"
 done
-cd "$CACHE/$PACKAGE"
+cd "$CACHE/$PACKAGE" || exit 1
 BUILD
