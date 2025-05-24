@@ -1,7 +1,7 @@
 #!/bin/sh
 if [ "$(id -u)" -ne 0 ]; then echo "Please run as root."; exit 1; fi
-REPO="$HOME/.local/share/repo"
-CACHE="$HOME/.cache/pkg"
+REPO="$PWD/repo"
+CACHE="$PWD/cache"
 PACKAGE="$1"
 if ! [ -d "$REPO" ]; then
     mkdir -p "$REPO"

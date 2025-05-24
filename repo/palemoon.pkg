@@ -1,0 +1,5 @@
+SOURCES="https://www.palemoon.org/download.php?mirror=us&bits=64&type=linuxgtk3
+https://www.palemoon.org/download.php?mirror=sig&bits=64&type=linuxgtk3"
+BUILD (){
+    ls
+}
