@@ -25,4 +25,4 @@ echo "$SOURCES" | while IFS= read -r URL; do
     curl -L -C - -f -o "$CACHE/$PACKAGE/$FILE" "$URL"
 done
 cd "$CACHE/$PACKAGE" || exit 1
-BUILD
+BUILD || exit 1
