@@ -3,6 +3,6 @@ BUILD (){
     tar xvf "cmatrix-v2.0-Butterscotch.tar"
     cd "cmatrix"
     ./configure
-        make
-        make install
+    make
+    make install
 }
