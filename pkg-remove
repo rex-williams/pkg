@@ -1,7 +1,0 @@
-#!/bin/sh
-PACKAGE="$1"
-CACHE="$(grep "^CACHE=" "$HOME/.local/src/pkg/pkg.conf" | cut -d= -f2)"
-cd /
-while read -r file; do
-    doas rm -fv "$file"
-done < "$CACHE/$PACKAGE/file.list"

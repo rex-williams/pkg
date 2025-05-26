@@ -1,0 +1,38 @@
+#!/bin/sh
+. "$HOME/work/pkg/pkg.conf"
+[ -d "$CACHE" ] || mkdir "$CACHE"
+
+package="$1"
+
+if [ -z "$package" ]; then
+find "$REPO" -type f -name "*.pkg" | while read -r pkgfile; do
+    test -f "$pkgfile" || break
+    . "$pkgfile"
+    printf "%s: %s\n" "$name" "$desc"
+done
+fi
+
+PROC="$(mktemp -d /tmp/pkg.XXXXXXXX)"
+trap 'rm -rf $PROC' HUP INT QUIT TERM PWR EXIT
+BUILD="$PROC/build"
+INSTALL="$PROC/install"
+mkdir \
+    "$BUILD" \
+    "$INSTALL" \
+
+pkgfile="$(find "$REPO" -type f -name "*.pkg" | grep "$package" | sed 1q)"
+. "$pkgfile" || exit
+CACHE="$CACHE/$package"
+
+[ -d "$CACHE" ] || mkdir "$CACHE"
+echo "$sources" | tr ' ' '\n' | while IFS= read -r url; do
+    file="$(echo "$url" | sed 's_.*/__g')"
+    printf "Downloading '%s'.\n" "$file"
+    #test -f "$CACHE/$file" ||
+    wget -c --directory-prefix="$CACHE" "$url"
+done
+
+cp -f -- "$CACHE"/* "$BUILD"
+cd "$BUILD" || exit
+build
+doas cp -rf -- "$INSTALL"/* /
