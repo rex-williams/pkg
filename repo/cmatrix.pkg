@@ -1,8 +1,11 @@
-SOURCES="https://github.com/abishekvashok/cmatrix/releases/download/v2.0/cmatrix-v2.0-Butterscotch.tar"
-BUILD (){
-    tar xvf "cmatrix-v2.0-Butterscotch.tar"
-    cd "cmatrix"
+name="cmatrix"
+desc="Simulates the display from The Matrix"
+version="v2.0-Butterscotch"
+sources="https://github.com/abishekvashok/cmatrix/releases/download/$(echo "$version" | cut -d- -f1)/cmatrix-${version}.tar"
+build (){
+    tar xvf "cmatrix-${version}.tar" -C "$BUILD"
+    cd "$BUILD/cmatrix"
     ./configure
     make
-    make install
+    make install DESTDIR="$INSTALL"
 }

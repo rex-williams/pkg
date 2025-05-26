@@ -1,0 +1,10 @@
+#!/bin/sh
+PACKAGE="$1"
+REPOS="$(grep "^REPOS=" "$HOME/.local/src/pkg/pkg.conf" | cut -d= -f2)"
+echo "$REPOS" | tr ':' '\n' | while read -r repo; do
+for pkgfile in "$repo"/*.pkg; do
+    test -f "$pkgfile" || break
+    . "$pkgfile"
+    printf "%s: %s\n" "$name" "$desc"
+done
+done | grep "$PACKAGE"
