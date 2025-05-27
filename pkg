@@ -78,4 +78,4 @@ build || exit 1
 printf "##### Adding install files to tarball #####\n"
 cd "$INSTALL"
 tar cafv "$DB/$package-$version.tar.xz" ./*
-doas tar xvf "$DB/$package-$version.tar.xz" -C /
+#doas tar xvf "$DB/$package-$version.tar.xz" -C /
