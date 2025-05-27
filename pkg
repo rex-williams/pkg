@@ -1,5 +1,6 @@
 #!/bin/sh
-. "/etc/pkg.conf"
+#. "/etc/pkg.conf"
+. "$HOME/work/pkg/pkg.conf"
 export MAKEFLAGS
 [ -d "$CACHE" ] || mkdir "$CACHE"
 [ -d "$DB" ] || mkdir "$DB"
