@@ -1,38 +1,80 @@
 #!/bin/sh
-. "$HOME/work/pkg/pkg.conf"
+. "./pkg.conf"
+export MAKEFLAGS
 [ -d "$CACHE" ] || mkdir "$CACHE"
+[ -d "$DB" ] || mkdir "$DB"
+
+extract() {
+    case $1 in
+        *.tar|*.xz|*.txz|*.gz)
+            cd "$2"
+            tar xvf "$1" --strip-components=1
+            ;;
+        *)
+            cp -f "$1" "$2"
+            ;;
+    esac
+}
+
+if [ -z "$1" ]; then
+    find "$REPO" -type f -name "*.pkg" | 
+    while read -r pkgfile; do
+        test -f "$pkgfile" || break
+        . "$pkgfile"
+        printf "%s: %s\n" "$name" "$desc"
+        unset desc
+    done | 
+    sed 's/:/ : /' | column -t -o ' ' | sed 's/ \+/ /2g' | sort
+    exit
+fi
 
 package="$1"
 
-if [ -z "$package" ]; then
-find "$REPO" -type f -name "*.pkg" | while read -r pkgfile; do
-    test -f "$pkgfile" || break
-    . "$pkgfile"
-    printf "%s: %s\n" "$name" "$desc"
+pkgfile="$REPO/$package.pkg"
+if ! [ -f "$pkgfile" ]; then
+    printf "##### %s doesn't exist ######\n" "$package"
+    exit 1
+fi
+. "$pkgfile" || exit 1
+
+for depend in $depends; do
+    ./pkg "$depend" || exit 1
 done
+
+if [ -f "$DB/$package-$version.tar.xz" ]; then
+    printf "##### %s already built #####\n" "$package"
+    exit 0
 fi
 
-PROC="$(mktemp -d /tmp/pkg.XXXXXXXX)"
-trap 'rm -rf $PROC' HUP INT QUIT TERM PWR EXIT
-BUILD="$PROC/build"
-INSTALL="$PROC/install"
-mkdir \
-    "$BUILD" \
-    "$INSTALL" \
-
-pkgfile="$(find "$REPO" -type f -name "*.pkg" | grep "$package" | sed 1q)"
-. "$pkgfile" || exit
-CACHE="$CACHE/$package"
-
-[ -d "$CACHE" ] || mkdir "$CACHE"
 echo "$sources" | tr ' ' '\n' | while IFS= read -r url; do
     file="$(echo "$url" | sed 's_.*/__g')"
-    printf "Downloading '%s'.\n" "$file"
-    #test -f "$CACHE/$file" ||
-    wget -c --directory-prefix="$CACHE" "$url"
+    printf "##### Downloading '%s' ######\n" "$file"
+    wget -c --directory-prefix="$CACHE/$package" "$url"
 done
 
-cp -f -- "$CACHE"/* "$BUILD"
-cd "$BUILD" || exit
-build
-doas cp -rf -- "$INSTALL"/* /
+# create dirs
+trap 'rm -rf $PROC' HUP INT QUIT TERM PWR EXIT
+PROC="$(mktemp -d /tmp/pkg.XXXXXXXX)"
+SOURCES="$PROC/sources"
+BUILD="$PROC/build"
+INSTALL="$PROC/INSTALL"
+mkdir \
+    "$SOURCES" \
+    "$BUILD" \
+    "$INSTALL"
+
+printf "##### Copying sources #####\n"
+cp -rfv "$CACHE/$package"/* "$SOURCES"
+
+printf "##### Extracting sources #####\n"
+for file in "$SOURCES"/*; do
+    extract "$file" "$BUILD"
+done
+
+printf "##### Building package #####\n"
+cd "$BUILD"
+build || exit 1
+
+printf "##### Adding install files to tarball #####\n"
+cd "$INSTALL"
+tar cafv "$DB/$package-$version.tar.xz" ./*
