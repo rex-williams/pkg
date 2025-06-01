@@ -1,21 +1,17 @@
 #!/bin/sh
-#. "/etc/pkg.conf"
-. "$HOME/work/pkg/pkg.conf"
+. "/etc/pkg.conf"
 export MAKEFLAGS
-[ -d "$CACHE" ] || mkdir "$CACHE"
-[ -d "$DB" ] || mkdir "$DB"
-
-extract() {
-    case $1 in
-        *.tar|*.xz|*.txz|*.gz)
-            cd "$2"
-            tar xvf "$1" --strip-components=1
-            ;;
-        *)
-            cp -f "$1" "$2"
-            ;;
-    esac
-}
+[ -d "$CACHE" ] || mkdir -p "$CACHE"
+[ -d "$DB" ] || mkdir -p "$DB"
+trap 'rm -rf $PROC' HUP INT QUIT TERM PWR EXIT
+PROC="$(mktemp -d /tmp/pkg.XXXXXXXX)"
+SOURCES="$PROC/sources"
+BUILD="$PROC/build"
+INSTALL="$PROC/INSTALL"
+mkdir -p \
+    "$SOURCES" \
+    "$BUILD" \
+    "$INSTALL"
 
 if [ -z "$1" ]; then
     find "$REPO" -type f -name "*.pkg" | 
@@ -26,11 +22,27 @@ if [ -z "$1" ]; then
         unset desc
     done | 
     sed 's/:/ : /' | column -t -o ' ' | sed 's/ \+/ /2g' | sort
-    exit
+    exit 0
 fi
 
-package="$1"
+extract() {
+    case $1 in
+        *.tar|*.xz|*.txz|*.gz)
+            cd "$2" || exit 1
+            tar xvf "$1" --strip-components=1
+            ;;
+        *)
+            cp -f "$1" "$2"
+            ;;
+    esac
+}
 
+install_pkg() {
+    printf "##### Installing #####\n"
+    tar xvf "$DB/$package-$version.tar.xz" -C /
+}
+
+package="$1"
 pkgfile="$REPO/$package.pkg"
 if ! [ -f "$pkgfile" ]; then
     printf "##### %s doesn't exist ######\n" "$package"
@@ -39,44 +51,42 @@ fi
 . "$pkgfile" || exit 1
 
 for depend in $depends; do
-    pkg "$depend" || exit 1
+    "$0" "$depend"
 done
 
 if [ -f "$DB/$package-$version.tar.xz" ]; then
-    printf "##### %s already built #####\n" "$package"
+    printf "##### %s already built, only installing #####\n" "$package"
+    install_pkg
     exit 0
 fi
 
 echo "$sources" | tr ' ' '\n' | while IFS= read -r url; do
     file="$(echo "$url" | sed 's_.*/__g')"
     printf "##### Downloading '%s' ######\n" "$file"
-    wget -c --directory-prefix="$CACHE/$package" "$url"
+    if command -v wget >/dev/null; then
+        wget -c --directory-prefix="$CACHE/$package/" "$url"
+    else
+        if command -v curl >/dev/null; then
+            curl -C - --output-dir "$CACHE/$package/" -O "$url"
+        else
+            printf 'No download command was able to be found, exiting\n'
+            exit 1
+        fi
+    fi
 done
-
-# create dirs
-trap 'rm -rf $PROC' HUP INT QUIT TERM PWR EXIT
-PROC="$(mktemp -d /tmp/pkg.XXXXXXXX)"
-SOURCES="$PROC/sources"
-BUILD="$PROC/build"
-INSTALL="$PROC/INSTALL"
-mkdir \
-    "$SOURCES" \
-    "$BUILD" \
-    "$INSTALL"
 
 printf "##### Copying sources #####\n"
 cp -rfv "$CACHE/$package"/* "$SOURCES"
 
 printf "##### Extracting sources #####\n"
 for file in "$SOURCES"/*; do
-    extract "$file" "$BUILD"
+    extract "$file" "$BUILD" || exit 1
 done
 
 printf "##### Building package #####\n"
-cd "$BUILD"
+cd "$BUILD" || exit 1
 build || exit 1
-
 printf "##### Adding install files to tarball #####\n"
-cd "$INSTALL"
+cd "$INSTALL" || exit 1
 tar cafv "$DB/$package-$version.tar.xz" ./*
-#doas tar xvf "$DB/$package-$version.tar.xz" -C /
+install_pkg
