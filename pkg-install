@@ -7,7 +7,7 @@ trap 'rm -rf $PROC' HUP INT QUIT TERM PWR EXIT
 PROC="$(mktemp -d /tmp/pkg.XXXXXXXX)"
 SOURCES="$PROC/sources"
 BUILD="$PROC/build"
-INSTALL="$PROC/INSTALL"
+INSTALL="$PROC/install"
 mkdir -p \
     "$SOURCES" \
     "$BUILD" \
