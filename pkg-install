@@ -46,7 +46,7 @@ fi
 
 for depend in $depends; do
     if ! [ -f "$REPO/$depend.pkg" ]; then
-        printf "##### %s doesn't exist ######\n" "$package"
+        printf "##### %s doesn't exist ######\n" "$depend"
         exit 1
     fi
     "$0" "$depend" || exit 1
