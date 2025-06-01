@@ -44,7 +44,7 @@ fi
 . "$pkgfile" || exit 1
 
 for depend in $depends; do
-    "$0" "$depend"
+    "$0" "$depend" || exit 1
 done
 
 if [ -f "$DB/$package-$version.tar.xz" ]; then
