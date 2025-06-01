@@ -1,0 +1,11 @@
+#!/bin/sh
+. "/etc/pkg.conf"
+find "$REPO" -type f -name "*.pkg" | 
+while read -r pkgfile; do
+    test -f "$pkgfile" || break
+    . "$pkgfile"
+    printf "%s: %s\n" "$name" "$desc"
+    unset desc
+done | 
+sed 's/:/ : /' | column -t -o ' ' | sed 's/ \+/ /2g' | sort | grep "$1"
+exit 0
