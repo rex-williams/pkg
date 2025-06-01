@@ -1,0 +1,11 @@
+#!/bin/sh
+. "/etc/pkg.conf"
+if [ -z "$1" ]; then
+    printf 'Specify package to remove.\n'
+    exit 1
+fi
+package="$1"
+tar tvf "$DB/$package-*" |
+while read -r file; do
+    rm -dv "$file"
+done
