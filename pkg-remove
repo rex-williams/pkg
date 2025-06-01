@@ -5,7 +5,17 @@ if [ -z "$1" ]; then
     exit 1
 fi
 package="$1"
-tar tvf "$DB/$package-*" |
+pkgfile="$REPO/$package.pkg"
+if ! [ -f "$pkgfile" ]; then
+    printf "##### %s doesn't exist ######\n" "$package"
+    exit 1
+fi
+. "$pkgfile" || exit 1
+if ! [ -f "$DB/$package-$version.tar.xz" ]; then
+    printf "##### %s install tarball doesn't exist ######\n" "$package"
+    exit 1
+fi
+tar tvf "$DB/$package-$version.tar.xz" |
 while read -r file; do
     rm -dv "$file"
 done
