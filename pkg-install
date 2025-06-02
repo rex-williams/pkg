@@ -1,18 +1,6 @@
 #!/bin/sh
 set -x
 . "/etc/pkg.conf"
-export MAKEFLAGS
-[ -d "$CACHE" ] || mkdir -p "$CACHE"
-[ -d "$DB" ] || mkdir -p "$DB"
-trap 'rm -rf $PROC' HUP INT QUIT TERM PWR EXIT
-PROC="$(mktemp -d /tmp/pkg.XXXXXXXX)"
-SOURCES="$PROC/sources"
-BUILD="$PROC/build"
-INSTALL="$PROC/install"
-mkdir -p \
-    "$SOURCES" \
-    "$BUILD" \
-    "$INSTALL"
 
 if [ -z "$1" ]; then
     printf 'You have to specify which package to install\n'
@@ -43,6 +31,19 @@ if ! [ -f "$pkgfile" ]; then
     exit 1
 fi
 . "$pkgfile" || exit 1
+
+export MAKEFLAGS
+[ -d "$CACHE" ] || mkdir -p "$CACHE"
+[ -d "$DB" ] || mkdir -p "$DB"
+trap 'rm -rf $PROC' HUP INT QUIT TERM PWR EXIT
+PROC="$(mktemp -d /tmp/pkg.XXXXXXXX)"
+SOURCES="$PROC/sources"
+BUILD="$PROC/build"
+INSTALL="$PROC/install"
+mkdir -p \
+    "$SOURCES" \
+    "$BUILD" \
+    "$INSTALL"
 
 for depend in $depends; do
     if ! [ -f "$REPO/$depend.pkg" ]; then
