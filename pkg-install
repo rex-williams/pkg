@@ -30,12 +30,12 @@ if ! [ -f "$pkgfile" ]; then
     printf "##### %s not found ######\n" "$package"
     exit 1
 fi
-if [ "$(echo "$PKGFILE" | wc -l)" -ge "1" ]; then
-    printf "$pkgfile\n" | while read -r pkgfile; do
-    . "$pkgfile"
-    category="$(realpath --relative-to="$REPO" "$pkgfile" | cut -d/ -f1)"
-    printf "%s/%s: %s\n" "$category" "$name" "$desc"
-    unset category name desc
+if [ "$(echo "$pkgfile" | wc -l)" -ge "1" ]; then
+    printf "%s\n" "$pkgfile" | while read -r pkgfile; do
+        . "$pkgfile"
+        category="$(realpath --relative-to="$REPO" "$pkgfile" | cut -d/ -f1)"
+        printf "%s/%s: %s\n" "$category" "$name" "$desc"
+        unset category name desc
     done
     printf "Specify which program to install"
     exit 1
