@@ -25,8 +25,8 @@ if ! [ -f "$DB/$package-$version.tar.xz" ]; then
     printf "##### %s install tarball doesn't exist, can't uninstall ######\n" "$package"
     exit 1
 fi
-tar tf "$DB/$package-$version.tar.xz" |
 cd /
+tar tf "$DB/$package-$version.tar.xz" |
 while read -r file; do
-    rm -dv "$file"
+    rm -dvi "$file"
 done
