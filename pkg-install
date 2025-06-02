@@ -11,7 +11,11 @@ extract() {
     case $1 in
         *.tar|*.xz|*.txz|*.gz)
             cd "$2" || exit 1
-            tar xvf "$1" --strip-components=1
+            tar xvf "$1" --strip-components=1 || exit 1
+        *.zip)
+            cd "$2" || exit 1
+            unzip "$1" || exit 1
+            ;;
             ;;
         *)
             cp -f "$1" "$2"
