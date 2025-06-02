@@ -1,4 +1,5 @@
 #!/bin/sh
+set -x
 . "/etc/pkg.conf"
 export MAKEFLAGS
 [ -d "$CACHE" ] || mkdir -p "$CACHE"
