@@ -37,7 +37,7 @@ install_pkg() {
 }
 
 package="$1"
-pkgfile="$(find "$REPO" -type d -name "$package" -maxdepth 0 -mindepth 0)/Pkgfile"
+pkgfile="$(find "$REPO" -name "$package" -maxdepth 1 -mindepth 1)/Pkgfile"
 if ! [ -f "$pkgfile" ]; then
     printf "##### %s doesn't exist ######\n" "$package"
     exit 1
