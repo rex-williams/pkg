@@ -5,7 +5,7 @@ while read -r pkgfile; do
     test -f "$pkgfile" || break
     . "$pkgfile"
     category="$(realpath --relative-to="$REPO" "$pkgfile" | cut -d/ -f1)"
-    printf "%s: %s\n" "$name" "$desc"
+    printf "%s/%s: %s\n" "$category" "$name" "$desc"
     unset desc
 done | 
 sed 's/:/ : /' | column -t -o ' ' | sed 's/ \+/ /2g' | sort | grep "$1"
