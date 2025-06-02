@@ -1,14 +1,7 @@
 BINDIR=/usr/bin
 ETCDIR=/etc/pkg
 
-all: pkg
-
-pkg:
-	chmod 755 pkg-install 
-	chmod 755 pkg-remove
-	chmod 755 pkg-search
-
-install: all
+install:
 	install -vdm755 $(DESTDIR)$(BINDIR)
 	install -vm755 pkg-install $(DESTDIR)$(BINDIR)
 	install -vm755 pkg-search $(DESTDIR)$(BINDIR)

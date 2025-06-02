@@ -1,3 +1,6 @@
 # pkg
-My package manager
-Highly in planning phase.
+my stupid package manager.
+
+# INSTALL
+
+`make install`
