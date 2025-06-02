@@ -84,10 +84,8 @@ echo "$sources" | tr ' ' '\n' | while IFS= read -r url; do
 done
 
 printf "##### Copying sources #####\n"
-cp -rfv "$CACHE/$package"/* "$SOURCES"
-echo "$files" | while read -r file; do
-    cp -f "$(dirname "$pkgfile")/$file" "$SOURCES"
-done
+cp -fv "$CACHE/$package"/* "$SOURCES"
+cp -fv -- "$(dirname "$pkgfile")/files"/* "$SOURCES"
 
 printf "##### Extracting sources #####\n"
 for file in "$SOURCES"/*; do
