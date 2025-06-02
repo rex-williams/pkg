@@ -25,7 +25,7 @@ install_pkg() {
 }
 
 package="$1"
-pkgfile="$(find "$REPO" -mindepth 1 -type d -name "*$package*")/Pkgfile"
+pkgfile="$(find "$REPO" -mindepth 2 -type d -name "*$package*")/Pkgfile"
 if [ "$(echo "$pkgfile" | wc -l)" -ge "1" ]; then
     printf "%s\n" "$pkgfile" | while read -r pkgfile; do
         . "$pkgfile"
