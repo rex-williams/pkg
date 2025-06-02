@@ -37,7 +37,7 @@ install_pkg() {
 }
 
 package="$1"
-pkgfile="$REPO/*/$package/Pkgfile"
+pkgfile="$REPO/"*"/$package/Pkgfile"
 if ! [ -f "$pkgfile" ]; then
     printf "##### %s doesn't exist ######\n" "$package"
     exit 1
