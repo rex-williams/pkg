@@ -26,10 +26,6 @@ install_pkg() {
 
 package="$1"
 pkgfile="$(find "$REPO" -type d -name "*$package*")/Pkgfile"
-if ! [ -f "$pkgfile" ]; then
-    printf "##### %s not found ######\n" "$package"
-    exit 1
-fi
 if [ "$(echo "$pkgfile" | wc -l)" -ge "1" ]; then
     printf "%s\n" "$pkgfile" | while read -r pkgfile; do
         . "$pkgfile"
@@ -38,6 +34,10 @@ if [ "$(echo "$pkgfile" | wc -l)" -ge "1" ]; then
         unset category name desc
     done
     printf "Specify which program to install"
+    exit 1
+fi
+if ! [ -f "$pkgfile" ]; then
+    printf "##### %s not found ######\n" "$package"
     exit 1
 fi
 . "$pkgfile" || exit 1
