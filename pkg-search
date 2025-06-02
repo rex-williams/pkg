@@ -1,4 +1,5 @@
 #!/bin/sh
+set -x
 . "/etc/pkg.conf"
 find "$REPO" -type f -name "Pkgfile" | 
 while read -r pkgfile; do
