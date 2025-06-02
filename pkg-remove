@@ -28,5 +28,5 @@ fi
 cd /
 tar tf "$DB/$package-$version.tar.xz" |
 while read -r file; do
-    rm -d "$file"
+    rm -dv "$file"
 done
