@@ -7,7 +7,7 @@ while read -r pkgfile; do
     . "$pkgfile"
     category="$(realpath --relative-to="$REPO" "$pkgfile" | cut -d/ -f1)"
     printf "%s/%s: %s\n" "$category" "$name" "$desc"
-    unset desc
+    unset name desc category
 done |
 sed 's/:/ : /' | column -t -o ' ' | sed 's/ \+/ /2g' | sort |
 exit 0
