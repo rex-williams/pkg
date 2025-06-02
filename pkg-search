@@ -1,5 +1,4 @@
 #!/bin/sh
-set -x
 . "/etc/pkg.conf"
 find "$REPO" -type f -name "Pkgfile" | 
 while read -r pkgfile; do
@@ -7,7 +6,7 @@ while read -r pkgfile; do
     . "$pkgfile"
     category="$(realpath --relative-to="$REPO" "$pkgfile" | cut -d/ -f1)"
     printf "%s/%s: %s\n" "$category" "$name" "$desc"
-    unset name desc category
+    unset desc
 done |
-sed 's/:/ : /' | column -t -o ' ' | sed 's/ \+/ /2g' | sort |
+grep "$1" | sed 's/:/ : /' | column -t -o ' ' | sed 's/ \+/ /2g' | sort
 exit 0
