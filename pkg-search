@@ -1,6 +1,6 @@
 #!/bin/sh
 . "/etc/pkg.conf"
-find "$REPO" -type f -name "*.pkg" | 
+find "$REPO" -type f -name "Pkgfile" | 
 while read -r pkgfile; do
     test -f "$pkgfile" || break
     . "$pkgfile"
