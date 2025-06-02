@@ -26,6 +26,7 @@ if ! [ -f "$DB/$package-$version.tar.xz" ]; then
     exit 1
 fi
 tar tf "$DB/$package-$version.tar.xz" |
+cd /
 while read -r file; do
     rm -dv "$file"
 done
