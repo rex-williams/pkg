@@ -5,14 +5,24 @@ if [ -z "$1" ]; then
     exit 1
 fi
 package="$1"
-pkgfile="$REPO/$package.pkg"
+pkgfile="$(find "$REPO" -mindepth 1 -maxdepth 2 -type d -wholename "*$package")/Pkgfile"
+if [ "$(echo "$pkgfile" | wc -l)" -gt '1' ]; then
+    printf "%s\n" "$pkgfile" | while read -r pkgfile; do
+        . "$pkgfile"
+        category="$(realpath --relative-to="$REPO" "$pkgfile" | cut -d/ -f1)"
+        printf "%s/%s: %s\n" "$category" "$name" "$desc"
+        unset category name desc
+    done
+    printf "Specify which program to install"
+    exit 1
+fi
 if ! [ -f "$pkgfile" ]; then
-    printf "##### %s doesn't exist ######\n" "$package"
+    printf "##### %s not found ######\n" "$package"
     exit 1
 fi
 . "$pkgfile" || exit 1
 if ! [ -f "$DB/$package-$version.tar.xz" ]; then
-    printf "##### %s install tarball doesn't exist ######\n" "$package"
+    printf "##### %s install tarball doesn't exist, can't uninstall ######\n" "$package"
     exit 1
 fi
 tar tf "$DB/$package-$version.tar.xz" |
