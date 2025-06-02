@@ -15,7 +15,7 @@ if ! [ -f "$DB/$package-$version.tar.xz" ]; then
     printf "##### %s install tarball doesn't exist ######\n" "$package"
     exit 1
 fi
-tar tvf "$DB/$package-$version.tar.xz" |
+tar tf "$DB/$package-$version.tar.xz" |
 while read -r file; do
     rm -dv "$file"
 done
