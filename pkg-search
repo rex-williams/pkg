@@ -4,6 +4,7 @@ find "$REPO" -type f -name "*.pkg" |
 while read -r pkgfile; do
     test -f "$pkgfile" || break
     . "$pkgfile"
+    category="$(realpath --relative-to="$REPO" "$pkgfile" | cut -d/ -f1)"
     printf "%s: %s\n" "$name" "$desc"
     unset desc
 done | 
