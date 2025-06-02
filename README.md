@@ -8,6 +8,7 @@ my stupid package manager.
 # USAGE
 
 Install a package
+
 `pkg-install [package]`
 
 Remove a package
