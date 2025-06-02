@@ -60,7 +60,7 @@ mkdir -p \
 
 for depend in $depends; do
     "$0" "$depend" || exit 1
-done
+done || exit 1
 
 if [ -f "$DB/$package-$version.tar.xz" ]; then
     printf "##### %s already built, only installing #####\n" "$package"
