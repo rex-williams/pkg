@@ -7,6 +7,10 @@ my stupid package manager.
 
 # USAGE
 
+Search for a package
+
+`pkg-search [package]`
+
 Install a package
 
 `pkg-install [package]`
@@ -14,7 +18,3 @@ Install a package
 Remove a package
 
 `pkg-remove [package]`
-
-Search for a package
-
-`pkg-search [package]`
