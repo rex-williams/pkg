@@ -68,20 +68,22 @@ if [ -f "$DB/$package-$version.tar.xz" ]; then
     exit 0
 fi
 
-echo "$sources" | tr ' ' '\n' | while IFS= read -r url; do
-    file="$(echo "$url" | sed 's_.*/__g')"
-    printf "##### Downloading '%s' ######\n" "$file"
-    if command -v wget >/dev/null; then
-        wget -c --directory-prefix="$CACHE/$package/" "$url"
-    else
-        if command -v curl >/dev/null; then
-            curl -C - --output-dir "$CACHE/$package/" -O "$url"
+if [ -n "$sources" ]; then
+    echo "$sources" | tr ' ' '\n' | while IFS= read -r url; do
+        file="$(echo "$url" | sed 's_.*/__g')"
+        printf "##### Downloading '%s' ######\n" "$file"
+        if command -v wget >/dev/null; then
+            wget -c --directory-prefix="$CACHE/$package/" "$url"
         else
-            printf 'No download command was able to be found, exiting\n'
-            exit 1
+            if command -v curl >/dev/null; then
+                curl -C - --output-dir "$CACHE/$package/" -O "$url"
+            else
+                printf 'No download command was able to be found, exiting\n'
+                exit 1
+            fi
         fi
-    fi
-done
+    done
+fi
 
 printf "##### Copying sources #####\n"
 cp -fv "$CACHE/$package"/* "$SOURCES"
