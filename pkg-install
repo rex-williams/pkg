@@ -85,7 +85,9 @@ done
 
 printf "##### Copying sources #####\n"
 cp -rfv "$CACHE/$package"/* "$SOURCES"
-cp -rfv "$(dirname "$pkgfile")"/* "$SOURCES"
+echo "$files" | while read -r file; do
+    cp -f "$(dirname "$pkgfile")/$file" "$SOURCES"
+done
 
 printf "##### Extracting sources #####\n"
 for file in "$SOURCES"/*; do
